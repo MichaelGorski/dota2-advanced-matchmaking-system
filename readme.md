@@ -1,4 +1,9 @@
-# Advanced MOBA Matchmaking System
+# Advanced MOBA Matchmaking & Performance Analysis System
+
+## Overview
+An innovative matchmaking system designed to create balanced, enjoyable matches in MOBA games, featuring sophisticated performance analysis and dynamic MMR adjustments. The system moves beyond traditional 50/50 win-rate forcing to focus on game quality, player development, and role-specific performance metrics.
+
+## Project Structure
 ```
 project/
 ├── README.md
@@ -40,38 +45,78 @@ project/
     └── advanced_scenarios.py
 ```
 
-# README.md
-```markdown
-# Advanced MOBA Matchmaking System
+## Key Features
 
-An innovative matchmaking system designed to create balanced, enjoyable matches in MOBA games while moving beyond traditional 50/50 win-rate forcing. This system emphasizes player performance, team synergy, and game quality.
+### Performance-Based Rating System (80/20 Split)
+- **Match Outcome (80%)**
+  - Basic win/loss MMR adjustment
+  - Team contribution factors
+  - Game impact assessment
+- **Individual Performance (20%)**
+  - Role-specific metrics
+  - Performance relative to expectations
+  - Context-aware evaluation
 
-## Features
+### Role-Specific Performance Metrics
+```python
+role_weights = {
+    'carry': {
+        'farm_efficiency': 0.3,
+        'damage_output': 0.3,
+        'survival': 0.2,
+        'objective_focus': 0.2
+    },
+    'mid': {
+        'farm_efficiency': 0.25,
+        'damage_output': 0.3,
+        'map_presence': 0.25,
+        'objective_focus': 0.2
+    },
+    'offlane': {
+        'space_creation': 0.3,
+        'survival': 0.25,
+        'damage_output': 0.25,
+        'objective_focus': 0.2
+    },
+    'soft_support': {
+        'map_presence': 0.3,
+        'utility': 0.3,
+        'teamfight_impact': 0.2,
+        'vision_control': 0.2
+    },
+    'hard_support': {
+        'vision_control': 0.3,
+        'utility': 0.3,
+        'survival': 0.2,
+        'teamfight_impact': 0.2
+    }
+}
+```
 
-### Performance-Based Rating (80/20 Split)
-- 80% weight on match outcome
-- 20% weight on individual performance
-- Exceptional performance recognition
-- Role-specific evaluation metrics
+### Advanced Metrics System
+- **Combat Metrics**
+  - Damage share analysis
+  - KDA efficiency
+  - Teamfight contribution
+  - Target prioritization
 
-### Advanced Metrics
-- Combat effectiveness
-- Resource management
-- Strategic impact
-- Team contribution
-- Role-specific performance indicators
+- **Resource Management**
+  - Farm efficiency relative to role
+  - Map resource control
+  - Experience optimization
+  - Item timing benchmarks
 
-### Matchmaking Improvements
-- Team composition optimization
-- Skill-based matching without forced losses
-- Behavioral score integration
-- Communication compatibility
+- **Strategic Impact**
+  - Map presence
+  - Objective control
+  - Space creation
+  - Vision game
 
-### Safety Features
-- Anti-boosting measures
-- Smurf detection
-- Performance consistency validation
-- Server quality checks
+- **Team Contribution**
+  - Utility score
+  - Save impact
+  - Setup effectiveness
+  - Sacrifice value
 
 ## Installation
 
@@ -94,38 +139,58 @@ pytest tests/
 ## Quick Start
 
 ```python
-from moba_matchmaking import MatchMaker
-from moba_matchmaking.core import Player, Match
+from moba_matchmaking import MetricsCalculator, MatchMaker
+from moba_matchmaking.core import Player, Match, GameMetrics
+
+# Initialize calculator
+calculator = MetricsCalculator()
+
+# Create player metrics
+metrics = GameMetrics(
+    kills=10,
+    deaths=2,
+    assists=15,
+    last_hits=300,
+    gpm=650,
+    teamfight_participation=0.8
+)
+
+# Calculate performance
+performance = calculator.calculate_overall_performance(
+    metrics=metrics,
+    game_data={'duration': 2400, 'team_damage': 50000},
+    role='carry'
+)
 
 # Initialize matchmaker
 matchmaker = MatchMaker()
 
-# Add players to pool
-players = [Player(id=i) for i in range(10)]
-for player in players:
-    matchmaker.add_to_pool(player)
-
 # Find optimal match
 match = matchmaker.find_match()
-
-# Process match results
-results = match.process_results()
 ```
 
 ## Configuration
 
-Basic configuration in `config.yml`:
-
 ```yaml
-matchmaking:
-  min_quality_threshold: 0.8
-  max_skill_difference: 500
-  team_size: 5
+# config.yml
+metrics:
+  roles:
+    carry:
+      farm_efficiency: 0.3
+      damage_output: 0.3
+      survival: 0.2
+      objective_focus: 0.2
+    # ... other roles
 
 performance:
   exceptional_threshold: 0.9
   excellent_threshold: 0.8
   very_good_threshold: 0.7
+
+matchmaking:
+  min_quality_threshold: 0.8
+  max_skill_difference: 500
+  team_size: 5
 
 safety:
   max_consecutive_exceptional: 3
@@ -134,46 +199,14 @@ safety:
 ```
 
 ## Documentation
-
 - [API Reference](docs/API.md)
 - [Performance Metrics](docs/METRICS.md)
 - [Example Scenarios](docs/EXAMPLES.md)
 - [Contributing Guidelines](docs/CONTRIBUTING.md)
 
-## Key Components
-
-### Player Performance Evaluation
-```python
-class PerformanceMetrics:
-    def __init__(self):
-        self.combat_metrics = {...}
-        self.efficiency_metrics = {...}
-        self.strategic_metrics = {...}
-        self.teamplay_metrics = {...}
-```
-
-### Matchmaking Algorithm
-```python
-class MatchMaker:
-    def find_match(self, player_pool):
-        matches = self.generate_potential_matches(player_pool)
-        return self.select_optimal_match(matches)
-```
-
-### Exceptional Performance Recognition
-```python
-class ExceptionalPerformance:
-    def evaluate(self, player, match):
-        score = self.calculate_performance_score(player, match)
-        return self.determine_mmr_adjustment(score)
-```
-
 ## Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) before submitting pull requests.
-
 ### Development Setup
-
 ```bash
 # Create development environment
 python -m venv venv
@@ -193,26 +226,14 @@ pytest --cov=moba_matchmaking tests/
 - Write unit tests for new features
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-- MOBA game developers and communities
-- Research papers on matchmaking systems
-- Contributing developers and testers
-
 ## Contact
-
 - GitHub Issues: For bug reports and feature requests
 - Email: your.email@example.com
 - Discord: [Join our community](discord-link)
-```
 
-Would you like me to provide:
-1. The complete code for any specific component?
-2. More detailed documentation for any section?
-3. Additional example scenarios?
-4. Test cases and benchmarks?
-
-Let me know which aspects you'd like to explore further!
+## Acknowledgments
+- MOBA game developers and communities
+- Research papers on matchmaking systems
+- Contributing developers and testers
